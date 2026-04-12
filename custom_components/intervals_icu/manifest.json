@@ -1,0 +1,12 @@
+{
+  "domain": "intervals_icu",
+  "name": "Intervals.icu",
+  "codeowners": ["@jelmer"],
+  "config_flow": true,
+  "documentation": "https://github.com/jelmer/hass-intervalsicu",
+  "integration_type": "hub",
+  "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/jelmer/hass-intervalsicu/issues",
+  "requirements": [],
+  "version": "0.1.0"
+}

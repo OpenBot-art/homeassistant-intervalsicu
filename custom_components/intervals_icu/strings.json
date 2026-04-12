@@ -1,0 +1,46 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect to Intervals.icu",
+        "description": "Enter your Intervals.icu athlete ID and API key. You can find these in your Intervals.icu account under Settings > Developer Settings.",
+        "data": {
+          "athlete_id": "Athlete ID",
+          "api_key": "API Key"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "Invalid API key or athlete ID",
+      "cannot_connect": "Unable to connect to Intervals.icu",
+      "unknown": "An unexpected error occurred"
+    },
+    "abort": {
+      "already_configured": "This athlete is already configured"
+    }
+  },
+  "entity": {
+    "sensor": {
+      "weight": { "name": "Weight" },
+      "resting_hr": { "name": "Resting heart rate" },
+      "hrv": { "name": "HRV" },
+      "sleep_time": { "name": "Sleep time" },
+      "sleep_score": { "name": "Sleep score" },
+      "readiness": { "name": "Readiness" },
+      "spo2": { "name": "SpO2" },
+      "steps": { "name": "Steps" },
+      "ctl": { "name": "Fitness (CTL)" },
+      "atl": { "name": "Fatigue (ATL)" },
+      "ramp_rate": { "name": "Ramp rate" },
+      "last_activity_name": { "name": "Last activity" },
+      "last_activity_type": { "name": "Last activity type" },
+      "last_activity_duration": { "name": "Last activity duration" },
+      "last_activity_distance": { "name": "Last activity distance" },
+      "last_activity_training_load": { "name": "Last activity training load" },
+      "next_workout_name": { "name": "Next workout" },
+      "next_workout_date": { "name": "Next workout date" },
+      "next_workout_type": { "name": "Next workout type" },
+      "ftp": { "name": "FTP" }
+    }
+  }
+}

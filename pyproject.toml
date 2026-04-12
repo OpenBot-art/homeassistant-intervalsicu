@@ -1,0 +1,15 @@
+[project]
+name = "hass-intervalsicu"
+version = "0.1.0"
+description = "Intervals.icu integration for Home Assistant"
+requires-python = ">=3.12"
+dependencies = [
+    "homeassistant",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "pytest-asyncio",
+    "aiohttp",
+]
