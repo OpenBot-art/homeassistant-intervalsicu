@@ -84,6 +84,10 @@ A custom Home Assistant integration for [Intervals.icu](https://intervals.icu), 
 | Max heart rate | Max heart rate (bpm) |
 | Resting heart rate (profile) | Resting HR from profile (bpm) |
 
+### Calendar
+
+A calendar entity shows planned workouts, targets, notes, and races from your Intervals.icu calendar. Events appear in the Home Assistant calendar card and can be used in automations.
+
 ## Data Update
 
-Data is polled from the Intervals.icu API every 2 hours.
+Data is polled from the Intervals.icu API every 2 hours. The calendar fetches events on demand when browsing date ranges.

@@ -10,7 +10,7 @@ from .api import IntervalsIcuClient
 from .const import CONF_API_KEY, CONF_ATHLETE_ID, DOMAIN
 from .coordinator import IntervalsIcuCoordinator
 
-PLATFORMS = ["sensor"]
+PLATFORMS = ["calendar", "sensor"]
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
