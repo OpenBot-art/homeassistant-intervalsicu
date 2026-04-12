@@ -7,4 +7,4 @@ CONF_API_KEY = "api_key"
 
 API_BASE_URL = "https://intervals.icu/api/v1"
 
-DEFAULT_SCAN_INTERVAL = 300  # 5 minutes
+DEFAULT_SCAN_INTERVAL = 7200  # 2 hours

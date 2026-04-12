@@ -31,6 +31,7 @@ A custom Home Assistant integration for [Intervals.icu](https://intervals.icu), 
 | Weight | Body weight (kg) |
 | Resting heart rate | Resting HR (bpm) |
 | HRV | Heart rate variability (ms) |
+| HRV SDNN | HRV SDNN (ms) |
 | Sleep time | Total sleep duration |
 | Sleep score | Sleep quality score |
 | Readiness | Readiness score |
@@ -38,7 +39,16 @@ A custom Home Assistant integration for [Intervals.icu](https://intervals.icu), 
 | Steps | Daily step count |
 | Fitness (CTL) | Chronic Training Load |
 | Fatigue (ATL) | Acute Training Load |
+| Form (TSB) | Training Stress Balance (CTL - ATL) |
 | Ramp rate | Training ramp rate |
+| Stress | Subjective stress level |
+| Mood | Subjective mood |
+| Motivation | Subjective motivation |
+| Fatigue (subjective) | Subjective fatigue |
+| Soreness | Subjective soreness |
+| Basal calories | Basal metabolic calories |
+| Active calories | Calories from activity |
+| Total calories | Total daily calories |
 
 ### Latest Activity
 
@@ -49,6 +59,13 @@ A custom Home Assistant integration for [Intervals.icu](https://intervals.icu), 
 | Last activity duration | Moving time |
 | Last activity distance | Distance (m) |
 | Last activity training load | Training load score |
+| Last activity avg HR | Average heart rate (bpm) |
+| Last activity max HR | Max heart rate (bpm) |
+| Last activity avg power | Average power (W) |
+| Last activity normalized power | Normalized power (W) |
+| Last activity intensity | Intensity factor |
+| Last activity calories | Calories burned |
+| Last activity elevation gain | Total elevation gain (m) |
 
 ### Planned Workouts
 
@@ -58,12 +75,15 @@ A custom Home Assistant integration for [Intervals.icu](https://intervals.icu), 
 | Next workout date | Date of next planned workout |
 | Next workout type | Type of next planned workout |
 
-### Athlete
+### Athlete Profile
 
 | Sensor | Description |
 |--------|-------------|
 | FTP | Functional Threshold Power (W) |
+| LTHR | Lactate Threshold Heart Rate (bpm) |
+| Max heart rate | Max heart rate (bpm) |
+| Resting heart rate (profile) | Resting HR from profile (bpm) |
 
 ## Data Update
 
-Data is polled from the Intervals.icu API every 5 minutes.
+Data is polled from the Intervals.icu API every 2 hours.
