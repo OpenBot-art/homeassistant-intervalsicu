@@ -62,11 +62,13 @@ class IntervalsIcuCoordinator(DataUpdateCoordinator[IntervalsIcuData]):
             wellness = None
 
         try:
-            activities = await self.client.get_activities(
-                oldest=today - timedelta(days=7),
+            all_activities = await self.client.get_activities(
+                oldest=today - timedelta(days=30),
                 newest=today,
                 limit=10,
             )
+            # Filter out empty/wellness-only records that have no name
+            activities = [a for a in all_activities if a.get("name")]
         except IntervalsIcuNotFoundError:
             activities = []
         except IntervalsIcuApiError as err:
