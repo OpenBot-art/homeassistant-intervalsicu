@@ -18,6 +18,10 @@ class IntervalsIcuAuthError(IntervalsIcuApiError):
     """Authentication error."""
 
 
+class IntervalsIcuNotFoundError(IntervalsIcuApiError):
+    """Resource not found."""
+
+
 class IntervalsIcuClient:
     """Async client for the Intervals.icu API."""
 
@@ -46,6 +50,8 @@ class IntervalsIcuClient:
             ) as resp:
                 if resp.status == 401:
                     raise IntervalsIcuAuthError("Invalid API key or athlete ID")
+                if resp.status == 404:
+                    raise IntervalsIcuNotFoundError(f"Not found: {path}")
                 resp.raise_for_status()
                 return await resp.json()
         except aiohttp.ClientResponseError as err:

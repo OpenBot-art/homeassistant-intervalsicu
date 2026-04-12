@@ -9,7 +9,7 @@ from typing import Any
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
-from .api import IntervalsIcuApiError, IntervalsIcuClient
+from .api import IntervalsIcuApiError, IntervalsIcuClient, IntervalsIcuNotFoundError
 from .const import DEFAULT_SCAN_INTERVAL, DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
@@ -46,28 +46,43 @@ class IntervalsIcuCoordinator(DataUpdateCoordinator[IntervalsIcuData]):
 
     async def _async_update_data(self) -> IntervalsIcuData:
         """Fetch data from the API."""
+        today = date.today()
         try:
-            today = date.today()
             athlete = await self.client.get_athlete()
+        except IntervalsIcuApiError as err:
+            raise UpdateFailed(f"Error fetching athlete data: {err}") from err
 
-            try:
-                wellness = await self.client.get_wellness(today)
-            except IntervalsIcuApiError:
-                # Wellness data may not exist for today yet
-                wellness = None
+        try:
+            wellness = await self.client.get_wellness(today)
+        except IntervalsIcuNotFoundError:
+            # Wellness data may not exist for today yet
+            wellness = None
+        except IntervalsIcuApiError as err:
+            _LOGGER.warning("Error fetching wellness data: %s", err)
+            wellness = None
 
+        try:
             activities = await self.client.get_activities(
                 oldest=today - timedelta(days=7),
                 newest=today,
                 limit=10,
             )
+        except IntervalsIcuNotFoundError:
+            activities = []
+        except IntervalsIcuApiError as err:
+            _LOGGER.warning("Error fetching activities: %s", err)
+            activities = []
 
+        try:
             events = await self.client.get_events(
                 oldest=today,
                 newest=today + timedelta(days=7),
             )
+        except IntervalsIcuNotFoundError:
+            events = []
         except IntervalsIcuApiError as err:
-            raise UpdateFailed(f"Error fetching Intervals.icu data: {err}") from err
+            _LOGGER.warning("Error fetching events: %s", err)
+            events = []
 
         return IntervalsIcuData(
             athlete=athlete,

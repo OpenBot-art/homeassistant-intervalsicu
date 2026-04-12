@@ -11,6 +11,7 @@ import aiohttp
 from custom_components.intervals_icu.api import (
     IntervalsIcuApiError,
     IntervalsIcuAuthError,
+    IntervalsIcuNotFoundError,
     IntervalsIcuClient,
 )
 
@@ -81,6 +82,17 @@ class TestIntervalsIcuClient(unittest.IsolatedAsyncioTestCase):
 
         with self.assertRaises(IntervalsIcuAuthError):
             await self.client.get_athlete()
+
+    async def test_not_found_raises(self) -> None:
+        """Test that a 404 response raises IntervalsIcuNotFoundError."""
+        mock_response = AsyncMock()
+        mock_response.status = 404
+        mock_response.__aenter__ = AsyncMock(return_value=mock_response)
+        mock_response.__aexit__ = AsyncMock(return_value=False)
+        self.session.request.return_value = mock_response
+
+        with self.assertRaises(IntervalsIcuNotFoundError):
+            await self.client.get_wellness(date(2026, 4, 12))
 
     async def test_get_activities(self) -> None:
         """Test fetching activities."""
