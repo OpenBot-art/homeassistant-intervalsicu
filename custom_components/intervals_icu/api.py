@@ -104,7 +104,7 @@ class IntervalsIcuClient:
             params["newest"] = newest.isoformat()
         return await self._request(
             "GET",
-            f"/athlete/{self._athlete_id}/activities.json",
+            f"/athlete/{self._athlete_id}/activities",
             params=params,
         )
 

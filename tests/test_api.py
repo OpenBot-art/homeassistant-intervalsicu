@@ -111,7 +111,7 @@ class TestIntervalsIcuClient(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(len(result), 1)
         self.assertEqual(result[0]["name"], "Morning Ride")
         call_args = self.session.request.call_args
-        self.assertIn("/activities.json", call_args[0][1])
+        self.assertIn("/activities", call_args[0][1])
 
     async def test_get_events(self) -> None:
         """Test fetching events."""

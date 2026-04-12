@@ -45,8 +45,15 @@ def _wellness_value(key: str) -> Callable[[IntervalsIcuData], Any]:
     return _get
 
 
-def _wellness_available(data: IntervalsIcuData) -> bool:
-    return data.wellness is not None
+def _wellness_available(key: str) -> Callable[[IntervalsIcuData], bool]:
+    """Create an available function for a wellness field."""
+
+    def _check(data: IntervalsIcuData) -> bool:
+        if data.wellness is None:
+            return False
+        return data.wellness.get(key) is not None
+
+    return _check
 
 
 def _latest_activity_value(key: str) -> Callable[[IntervalsIcuData], Any]:
@@ -91,11 +98,44 @@ def _form_value(data: IntervalsIcuData) -> float | None:
     return round(ctl - atl, 1)
 
 
+def _form_available(data: IntervalsIcuData) -> bool:
+    """Check if form can be calculated."""
+    if data.wellness is None:
+        return False
+    return data.wellness.get("ctl") is not None and data.wellness.get("atl") is not None
+
+
 def _athlete_value(key: str) -> Callable[[IntervalsIcuData], Any]:
+    """Create a value function for an athlete top-level field."""
+
     def _get(data: IntervalsIcuData) -> Any:
         return data.athlete.get(key)
 
     return _get
+
+
+def _sport_setting_value(key: str) -> Callable[[IntervalsIcuData], Any]:
+    """Create a value function for a field in the default sport settings."""
+
+    def _get(data: IntervalsIcuData) -> Any:
+        settings = data.athlete.get("sportSettings")
+        if not settings:
+            return None
+        return settings[0].get(key)
+
+    return _get
+
+
+def _sport_setting_available(key: str) -> Callable[[IntervalsIcuData], bool]:
+    """Create an available function for a field in the default sport settings."""
+
+    def _check(data: IntervalsIcuData) -> bool:
+        settings = data.athlete.get("sportSettings")
+        if not settings:
+            return False
+        return settings[0].get(key) is not None
+
+    return _check
 
 
 SENSOR_DESCRIPTIONS: tuple[IntervalsIcuSensorEntityDescription, ...] = (
@@ -107,7 +147,7 @@ SENSOR_DESCRIPTIONS: tuple[IntervalsIcuSensorEntityDescription, ...] = (
         device_class=SensorDeviceClass.WEIGHT,
         state_class=SensorStateClass.MEASUREMENT,
         value_fn=_wellness_value("weight"),
-        available_fn=_wellness_available,
+        available_fn=_wellness_available("weight"),
     ),
     IntervalsIcuSensorEntityDescription(
         key="resting_hr",
@@ -115,7 +155,7 @@ SENSOR_DESCRIPTIONS: tuple[IntervalsIcuSensorEntityDescription, ...] = (
         native_unit_of_measurement="bpm",
         state_class=SensorStateClass.MEASUREMENT,
         value_fn=_wellness_value("restingHR"),
-        available_fn=_wellness_available,
+        available_fn=_wellness_available("restingHR"),
     ),
     IntervalsIcuSensorEntityDescription(
         key="hrv",
@@ -123,7 +163,7 @@ SENSOR_DESCRIPTIONS: tuple[IntervalsIcuSensorEntityDescription, ...] = (
         native_unit_of_measurement="ms",
         state_class=SensorStateClass.MEASUREMENT,
         value_fn=_wellness_value("hrv"),
-        available_fn=_wellness_available,
+        available_fn=_wellness_available("hrv"),
     ),
     IntervalsIcuSensorEntityDescription(
         key="sleep_time",
@@ -132,21 +172,21 @@ SENSOR_DESCRIPTIONS: tuple[IntervalsIcuSensorEntityDescription, ...] = (
         device_class=SensorDeviceClass.DURATION,
         state_class=SensorStateClass.MEASUREMENT,
         value_fn=_wellness_value("sleepSecs"),
-        available_fn=_wellness_available,
+        available_fn=_wellness_available("sleepSecs"),
     ),
     IntervalsIcuSensorEntityDescription(
         key="sleep_score",
         translation_key="sleep_score",
         state_class=SensorStateClass.MEASUREMENT,
         value_fn=_wellness_value("sleepScore"),
-        available_fn=_wellness_available,
+        available_fn=_wellness_available("sleepScore"),
     ),
     IntervalsIcuSensorEntityDescription(
         key="readiness",
         translation_key="readiness",
         state_class=SensorStateClass.MEASUREMENT,
         value_fn=_wellness_value("readiness"),
-        available_fn=_wellness_available,
+        available_fn=_wellness_available("readiness"),
     ),
     IntervalsIcuSensorEntityDescription(
         key="spo2",
@@ -154,7 +194,7 @@ SENSOR_DESCRIPTIONS: tuple[IntervalsIcuSensorEntityDescription, ...] = (
         native_unit_of_measurement="%",
         state_class=SensorStateClass.MEASUREMENT,
         value_fn=_wellness_value("spO2"),
-        available_fn=_wellness_available,
+        available_fn=_wellness_available("spO2"),
     ),
     IntervalsIcuSensorEntityDescription(
         key="steps",
@@ -162,70 +202,70 @@ SENSOR_DESCRIPTIONS: tuple[IntervalsIcuSensorEntityDescription, ...] = (
         native_unit_of_measurement="steps",
         state_class=SensorStateClass.TOTAL_INCREASING,
         value_fn=_wellness_value("steps"),
-        available_fn=_wellness_available,
+        available_fn=_wellness_available("steps"),
     ),
     IntervalsIcuSensorEntityDescription(
         key="ctl",
         translation_key="ctl",
         state_class=SensorStateClass.MEASUREMENT,
         value_fn=_wellness_value("ctl"),
-        available_fn=_wellness_available,
+        available_fn=_wellness_available("ctl"),
     ),
     IntervalsIcuSensorEntityDescription(
         key="atl",
         translation_key="atl",
         state_class=SensorStateClass.MEASUREMENT,
         value_fn=_wellness_value("atl"),
-        available_fn=_wellness_available,
+        available_fn=_wellness_available("atl"),
     ),
     IntervalsIcuSensorEntityDescription(
         key="ramp_rate",
         translation_key="ramp_rate",
         state_class=SensorStateClass.MEASUREMENT,
         value_fn=_wellness_value("rampRate"),
-        available_fn=_wellness_available,
+        available_fn=_wellness_available("rampRate"),
     ),
     IntervalsIcuSensorEntityDescription(
         key="form",
         translation_key="form",
         state_class=SensorStateClass.MEASUREMENT,
         value_fn=_form_value,
-        available_fn=_wellness_available,
+        available_fn=_form_available,
     ),
     IntervalsIcuSensorEntityDescription(
         key="stress",
         translation_key="stress",
         state_class=SensorStateClass.MEASUREMENT,
         value_fn=_wellness_value("stress"),
-        available_fn=_wellness_available,
+        available_fn=_wellness_available("stress"),
     ),
     IntervalsIcuSensorEntityDescription(
         key="mood",
         translation_key="mood",
         state_class=SensorStateClass.MEASUREMENT,
         value_fn=_wellness_value("mood"),
-        available_fn=_wellness_available,
+        available_fn=_wellness_available("mood"),
     ),
     IntervalsIcuSensorEntityDescription(
         key="motivation",
         translation_key="motivation",
         state_class=SensorStateClass.MEASUREMENT,
         value_fn=_wellness_value("motivation"),
-        available_fn=_wellness_available,
+        available_fn=_wellness_available("motivation"),
     ),
     IntervalsIcuSensorEntityDescription(
         key="fatigue",
         translation_key="fatigue",
         state_class=SensorStateClass.MEASUREMENT,
         value_fn=_wellness_value("fatigue"),
-        available_fn=_wellness_available,
+        available_fn=_wellness_available("fatigue"),
     ),
     IntervalsIcuSensorEntityDescription(
         key="soreness",
         translation_key="soreness",
         state_class=SensorStateClass.MEASUREMENT,
         value_fn=_wellness_value("soreness"),
-        available_fn=_wellness_available,
+        available_fn=_wellness_available("soreness"),
     ),
     IntervalsIcuSensorEntityDescription(
         key="hrv_rmssd",
@@ -233,7 +273,7 @@ SENSOR_DESCRIPTIONS: tuple[IntervalsIcuSensorEntityDescription, ...] = (
         native_unit_of_measurement="ms",
         state_class=SensorStateClass.MEASUREMENT,
         value_fn=_wellness_value("hrvSDNN"),
-        available_fn=_wellness_available,
+        available_fn=_wellness_available("hrvSDNN"),
     ),
     IntervalsIcuSensorEntityDescription(
         key="kcal_consumed",
@@ -241,7 +281,7 @@ SENSOR_DESCRIPTIONS: tuple[IntervalsIcuSensorEntityDescription, ...] = (
         native_unit_of_measurement="kcal",
         state_class=SensorStateClass.MEASUREMENT,
         value_fn=_wellness_value("kcalConsumed"),
-        available_fn=_wellness_available,
+        available_fn=_wellness_available("kcalConsumed"),
     ),
     # Latest activity sensors
     IntervalsIcuSensorEntityDescription(
@@ -302,7 +342,7 @@ SENSOR_DESCRIPTIONS: tuple[IntervalsIcuSensorEntityDescription, ...] = (
         native_unit_of_measurement="W",
         device_class=SensorDeviceClass.POWER,
         state_class=SensorStateClass.MEASUREMENT,
-        value_fn=_latest_activity_value("average_watts"),
+        value_fn=_latest_activity_value("icu_average_watts"),
         available_fn=_latest_activity_available,
     ),
     IntervalsIcuSensorEntityDescription(
@@ -358,31 +398,31 @@ SENSOR_DESCRIPTIONS: tuple[IntervalsIcuSensorEntityDescription, ...] = (
         value_fn=_next_event_value("type"),
         available_fn=_next_event_available,
     ),
-    # Athlete fitness metrics
+    # Athlete fitness metrics (FTP, LTHR, max HR are per-sport in sportSettings)
     IntervalsIcuSensorEntityDescription(
         key="ftp",
         translation_key="ftp",
         native_unit_of_measurement="W",
         device_class=SensorDeviceClass.POWER,
         state_class=SensorStateClass.MEASUREMENT,
-        value_fn=_athlete_value("icu_ftp"),
-        available_fn=lambda data: data.athlete.get("icu_ftp") is not None,
+        value_fn=_sport_setting_value("ftp"),
+        available_fn=_sport_setting_available("ftp"),
     ),
     IntervalsIcuSensorEntityDescription(
         key="lthr",
         translation_key="lthr",
         native_unit_of_measurement="bpm",
         state_class=SensorStateClass.MEASUREMENT,
-        value_fn=_athlete_value("icu_lthr"),
-        available_fn=lambda data: data.athlete.get("icu_lthr") is not None,
+        value_fn=_sport_setting_value("lthr"),
+        available_fn=_sport_setting_available("lthr"),
     ),
     IntervalsIcuSensorEntityDescription(
         key="max_hr",
         translation_key="max_hr",
         native_unit_of_measurement="bpm",
         state_class=SensorStateClass.MEASUREMENT,
-        value_fn=_athlete_value("icu_max_hr"),
-        available_fn=lambda data: data.athlete.get("icu_max_hr") is not None,
+        value_fn=_sport_setting_value("max_hr"),
+        available_fn=_sport_setting_available("max_hr"),
     ),
     IntervalsIcuSensorEntityDescription(
         key="resting_hr_athlete",
