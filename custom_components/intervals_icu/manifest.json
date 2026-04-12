@@ -3,10 +3,10 @@
   "name": "Intervals.icu",
   "codeowners": ["@jelmer"],
   "config_flow": true,
-  "documentation": "https://github.com/jelmer/hass-intervalsicu",
+  "documentation": "https://github.com/jelmer/homeassistant-intervalsicu",
   "integration_type": "hub",
   "iot_class": "cloud_polling",
-  "issue_tracker": "https://github.com/jelmer/hass-intervalsicu/issues",
+  "issue_tracker": "https://github.com/jelmer/homeassistant-intervalsicu/issues",
   "requirements": [],
   "version": "0.1.0"
 }

@@ -1,5 +1,5 @@
 [project]
-name = "hass-intervalsicu"
+name = "homeassistant-intervalsicu"
 version = "0.1.0"
 description = "Intervals.icu integration for Home Assistant"
 requires-python = ">=3.12"
