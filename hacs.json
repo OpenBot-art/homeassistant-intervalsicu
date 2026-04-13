@@ -1,5 +1,4 @@
 {
   "name": "Intervals.icu",
-  "render_readme": true,
-  "domains": ["calendar", "sensor"]
+  "render_readme": true
 }
