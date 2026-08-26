@@ -32,6 +32,7 @@ class IntervalsIcuSensorEntityDescription(SensorEntityDescription):
 
     value_fn: Callable[[IntervalsIcuData], Any]
     available_fn: Callable[[IntervalsIcuData], bool] = lambda _data: True
+    attrs_fn: Callable[[IntervalsIcuData], dict[str, Any] | None] | None = None
 
 
 def _wellness_value(key: str) -> Callable[[IntervalsIcuData], Any]:
@@ -435,6 +436,99 @@ SENSOR_DESCRIPTIONS: tuple[IntervalsIcuSensorEntityDescription, ...] = (
 )
 
 
+_NAMED_DISTANCES: tuple[tuple[float, str], ...] = (
+    (1609.34, "1 mile"),
+    (3218.69, "2 miles"),
+    (5000.0, "5k"),
+    (10000.0, "10k"),
+    (16093.4, "10 miles"),
+    (21097.5, "half marathon"),
+    (42195.0, "marathon"),
+)
+
+
+def _format_distance(meters: float) -> str:
+    """Format a distance in meters as a short human-readable label."""
+    for value, label in _NAMED_DISTANCES:
+        if abs(meters - value) < 1.0:
+            return label
+    if meters >= 1000:
+        km = meters / 1000
+        if km == int(km):
+            return f"{int(km)}k"
+        return f"{km:g}k"
+    return f"{round(meters)}m"
+
+
+def _best_effort_value(index: int) -> Callable[[IntervalsIcuData], Any]:
+    """Create a value function for the best effort at a distance index."""
+
+    def _get(data: IntervalsIcuData) -> Any:
+        curve = data.pace_curve
+        if not curve:
+            return None
+        values = curve.get("values") or []
+        if index >= len(values):
+            return None
+        return values[index]
+
+    return _get
+
+
+def _best_effort_available(index: int) -> Callable[[IntervalsIcuData], bool]:
+    """Return True when the pace curve has a value at the given index."""
+
+    def _check(data: IntervalsIcuData) -> bool:
+        curve = data.pace_curve
+        if not curve:
+            return False
+        values = curve.get("values") or []
+        return index < len(values) and values[index] is not None
+
+    return _check
+
+
+def _best_effort_attrs(
+    index: int,
+) -> Callable[[IntervalsIcuData], dict[str, Any] | None]:
+    """Return the activity id/name/date that set the best effort at this index."""
+
+    def _get(data: IntervalsIcuData) -> dict[str, Any] | None:
+        curve = data.pace_curve
+        if not curve:
+            return None
+        activity_ids = curve.get("activity_id") or []
+        if index >= len(activity_ids):
+            return None
+        activity_id = activity_ids[index]
+        return {"activity_id": activity_id}
+
+    return _get
+
+
+def _best_effort_sensors(
+    data: IntervalsIcuData,
+) -> tuple[IntervalsIcuSensorEntityDescription, ...]:
+    """Build one sensor description per distance in the pace curve."""
+    curve = data.pace_curve
+    if not curve:
+        return ()
+    distances = curve.get("distance") or []
+    return tuple(
+        IntervalsIcuSensorEntityDescription(
+            key=f"best_effort_{round(meters)}m",
+            name=f"Best effort {_format_distance(meters)}",
+            native_unit_of_measurement=UnitOfTime.SECONDS,
+            device_class=SensorDeviceClass.DURATION,
+            state_class=SensorStateClass.MEASUREMENT,
+            value_fn=_best_effort_value(index),
+            available_fn=_best_effort_available(index),
+            attrs_fn=_best_effort_attrs(index),
+        )
+        for index, meters in enumerate(distances)
+    )
+
+
 async def async_setup_entry(
     hass: HomeAssistant,
     entry: ConfigEntry,
@@ -444,9 +538,10 @@ async def async_setup_entry(
     coordinator: IntervalsIcuCoordinator = hass.data[DOMAIN][entry.entry_id]
     athlete_id = entry.data[CONF_ATHLETE_ID]
 
+    descriptions = SENSOR_DESCRIPTIONS + _best_effort_sensors(coordinator.data)
     async_add_entities(
         IntervalsIcuSensor(coordinator, description, athlete_id)
-        for description in SENSOR_DESCRIPTIONS
+        for description in descriptions
     )
 
 
@@ -484,3 +579,10 @@ class IntervalsIcuSensor(CoordinatorEntity[IntervalsIcuCoordinator], SensorEntit
         if not super().available:
             return False
         return self.entity_description.available_fn(self.coordinator.data)
+
+    @property
+    def extra_state_attributes(self) -> dict[str, Any] | None:
+        """Return additional state attributes, if the description provides them."""
+        if self.entity_description.attrs_fn is None:
+            return None
+        return self.entity_description.attrs_fn(self.coordinator.data)

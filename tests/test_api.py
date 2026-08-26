@@ -134,6 +134,36 @@ class TestIntervalsIcuClient(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(len(result), 1)
         self.assertEqual(result[0]["name"], "Tempo Run")
 
+    async def test_get_pace_curves(self) -> None:
+        """Test fetching pace curves."""
+        mock_response = AsyncMock()
+        mock_response.status = 200
+        mock_response.json = AsyncMock(
+            return_value={
+                "list": [
+                    {
+                        "id": "all",
+                        "type": "PACE",
+                        "distance": [400.0, 800.0, 1500.0],
+                        "values": [72, 160, 320],
+                        "activity_id": ["i12345:1", "i12345:2", "i12345:3"],
+                    }
+                ],
+                "activities": {},
+            }
+        )
+        mock_response.raise_for_status = MagicMock()
+        mock_response.__aenter__ = AsyncMock(return_value=mock_response)
+        mock_response.__aexit__ = AsyncMock(return_value=False)
+        self.session.request.return_value = mock_response
+
+        result = await self.client.get_pace_curves(sport="Run", curves="all")
+
+        self.assertEqual(result["list"][0]["values"], [72, 160, 320])
+        call_args = self.session.request.call_args
+        self.assertIn("/athlete/i12345/pace-curves.json", call_args[0][1])
+        self.assertEqual(call_args[1]["params"], {"type": "Run", "curves": "all"})
+
     async def test_connection_error_raises(self) -> None:
         """Test that connection errors raise IntervalsIcuApiError."""
         self.session.request.side_effect = aiohttp.ClientError("Connection failed")
