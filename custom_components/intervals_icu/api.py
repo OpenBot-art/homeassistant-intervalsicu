@@ -108,6 +108,19 @@ class IntervalsIcuClient:
             params=params,
         )
 
+    async def get_pace_curves(
+        self,
+        sport: str = "Run",
+        curves: str = "all",
+    ) -> dict[str, Any]:
+        """Get best pace curves (mean-maximal pace at standard distances)."""
+        params = {"type": sport, "curves": curves}
+        return await self._request(
+            "GET",
+            f"/athlete/{self._athlete_id}/pace-curves.json",
+            params=params,
+        )
+
     async def get_events(
         self,
         oldest: date | None = None,

@@ -24,11 +24,13 @@ class IntervalsIcuData:
         wellness: dict[str, Any] | None,
         activities: list[dict[str, Any]],
         events: list[dict[str, Any]],
+        pace_curve: dict[str, Any] | None,
     ) -> None:
         self.athlete = athlete
         self.wellness = wellness
         self.activities = activities
         self.events = events
+        self.pace_curve = pace_curve
 
 
 class IntervalsIcuCoordinator(DataUpdateCoordinator[IntervalsIcuData]):
@@ -86,9 +88,20 @@ class IntervalsIcuCoordinator(DataUpdateCoordinator[IntervalsIcuData]):
             _LOGGER.warning("Error fetching events: %s", err)
             events = []
 
+        try:
+            pace_curves = await self.client.get_pace_curves(sport="Run", curves="all")
+            curve_list = pace_curves.get("list") or []
+            pace_curve = curve_list[0] if curve_list else None
+        except IntervalsIcuNotFoundError:
+            pace_curve = None
+        except IntervalsIcuApiError as err:
+            _LOGGER.warning("Error fetching pace curves: %s", err)
+            pace_curve = None
+
         return IntervalsIcuData(
             athlete=athlete,
             wellness=wellness,
             activities=activities,
             events=events,
+            pace_curve=pace_curve,
         )
