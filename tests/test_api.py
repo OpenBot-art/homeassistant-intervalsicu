@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import base64
 import unittest
 from datetime import date
 from unittest.mock import AsyncMock, MagicMock
@@ -29,8 +30,14 @@ class TestIntervalsIcuClient(unittest.IsolatedAsyncioTestCase):
 
     async def test_auth_uses_basic_auth(self) -> None:
         """Test that authentication uses Basic Auth with API_KEY username."""
-        self.assertEqual(self.client._auth.login, "API_KEY")
-        self.assertEqual(self.client._auth.password, "test-api-key")
+        headers = self.client._auth_headers
+        self.assertIn("Authorization", headers)
+        self.assertTrue(headers["Authorization"].startswith("Basic "))
+
+        decoded = base64.b64decode(
+            headers["Authorization"].removeprefix("Basic ")
+        ).decode("latin1")
+        self.assertEqual(decoded, "API_KEY:test-api-key")
 
     async def test_get_athlete(self) -> None:
         """Test fetching athlete profile."""

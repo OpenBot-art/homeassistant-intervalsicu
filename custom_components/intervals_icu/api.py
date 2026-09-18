@@ -2,12 +2,17 @@
 
 from __future__ import annotations
 
+import base64
 from datetime import date
 from typing import Any
 
 import aiohttp
 
 from .const import API_BASE_URL
+
+# Intervals.icu authenticates with HTTP Basic auth where the username is the
+# literal string "API_KEY" and the password is the athlete's personal API key.
+API_KEY_USERNAME = "API_KEY"
 
 
 class IntervalsIcuApiError(Exception):
@@ -34,7 +39,22 @@ class IntervalsIcuClient:
         """Initialize the API client."""
         self._session = session
         self._athlete_id = athlete_id
-        self._auth = aiohttp.BasicAuth("API_KEY", api_key)
+        self._api_key = api_key
+
+    @property
+    def _auth_headers(self) -> dict[str, str]:
+        """Build the Authorization header for the current API key.
+
+        ``aiohttp.BasicAuth`` is deprecated and slated for removal in aiohttp
+        4.0, so the header is produced with the supported helper instead of
+        relying on the session's ``auth`` argument.
+        """
+        return {
+            "Authorization": "Basic "
+            + base64.b64encode(
+                f"{API_KEY_USERNAME}:{self._api_key}".encode("latin1")
+            ).decode("ascii")
+        }
 
     async def _request(
         self,
@@ -44,9 +64,10 @@ class IntervalsIcuClient:
     ) -> Any:
         """Make an authenticated API request."""
         url = f"{API_BASE_URL}{path}"
+        headers = {**kwargs.pop("headers", {}), **self._auth_headers}
         try:
             async with self._session.request(
-                method, url, auth=self._auth, **kwargs
+                method, url, headers=headers, **kwargs
             ) as resp:
                 if resp.status == 401:
                     raise IntervalsIcuAuthError("Invalid API key or athlete ID")

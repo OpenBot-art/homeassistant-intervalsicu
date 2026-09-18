@@ -20,6 +20,9 @@
     }
   },
   "entity": {
+    "calendar": {
+      "training_calendar": { "name": "Training calendar" }
+    },
     "sensor": {
       "weight": { "name": "Weight" },
       "resting_hr": { "name": "Resting heart rate" },
@@ -38,7 +41,7 @@
       "motivation": { "name": "Motivation" },
       "fatigue": { "name": "Fatigue (subjective)" },
       "soreness": { "name": "Soreness" },
-      "hrv_rmssd": { "name": "HRV SDNN" },
+      "hrv_sdnn": { "name": "HRV SDNN" },
       "kcal_consumed": { "name": "Calories consumed" },
       "last_activity_name": { "name": "Last activity" },
       "last_activity_type": { "name": "Last activity type" },
@@ -55,9 +58,9 @@
       "next_workout_name": { "name": "Next workout" },
       "next_workout_date": { "name": "Next workout date" },
       "next_workout_type": { "name": "Next workout type" },
-      "ftp": { "name": "FTP" },
-      "lthr": { "name": "LTHR" },
-      "max_hr": { "name": "Max heart rate" },
+      "ftp": { "name": "{sport} FTP" },
+      "lthr": { "name": "{sport} LTHR" },
+      "max_hr": { "name": "{sport} max heart rate" },
       "resting_hr_athlete": { "name": "Resting heart rate (profile)" }
     }
   }

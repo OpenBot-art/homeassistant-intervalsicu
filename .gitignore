@@ -1,3 +1,6 @@
 __pycache__/
 *.pyc
 .pytest_cache/
+
+# Local virtualenv used for running the test suite
+.venv/

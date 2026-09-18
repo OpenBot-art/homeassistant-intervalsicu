@@ -1,6 +1,6 @@
 [project]
 name = "homeassistant-intervalsicu"
-version = "0.1.5"
+version = "0.2.0"
 description = "Intervals.icu integration for Home Assistant"
 requires-python = ">=3.12"
 dependencies = [
@@ -13,3 +13,9 @@ dev = [
     "pytest-asyncio",
     "aiohttp",
 ]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# The integration imports `custom_components.intervals_icu`, so the repository
+# root has to be on sys.path for the tests to resolve it.
+pythonpath = ["."]
