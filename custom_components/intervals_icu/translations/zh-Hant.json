@@ -1,0 +1,67 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "連線到 Intervals.icu",
+        "description": "請輸入你的 Intervals.icu 運動員 ID 和 API 金鑰。可在 Intervals.icu 帳號的「設定 > 開發者設定」中找到。",
+        "data": {
+          "athlete_id": "運動員 ID",
+          "api_key": "API 金鑰"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "API 金鑰或運動員 ID 無效",
+      "cannot_connect": "無法連線到 Intervals.icu",
+      "unknown": "發生未知錯誤"
+    },
+    "abort": {
+      "already_configured": "該運動員已設定"
+    }
+  },
+  "entity": {
+    "calendar": {
+      "training_calendar": { "name": "訓練日曆" }
+    },
+    "sensor": {
+      "weight": { "name": "體重" },
+      "resting_hr": { "name": "靜息心率" },
+      "hrv": { "name": "心率變異性" },
+      "sleep_time": { "name": "睡眠時長" },
+      "sleep_score": { "name": "睡眠評分" },
+      "readiness": { "name": "準備度" },
+      "spo2": { "name": "血氧飽和度" },
+      "steps": { "name": "步數" },
+      "ctl": { "name": "體能 (CTL)" },
+      "atl": { "name": "疲勞 (ATL)" },
+      "ramp_rate": { "name": "負荷變化率" },
+      "form": { "name": "狀態 (TSB)" },
+      "stress": { "name": "壓力" },
+      "mood": { "name": "情緒" },
+      "motivation": { "name": "積極性" },
+      "fatigue": { "name": "疲勞感 (主觀)" },
+      "soreness": { "name": "肌肉痠痛" },
+      "hrv_sdnn": { "name": "心率變異性 SDNN" },
+      "kcal_consumed": { "name": "攝取熱量" },
+      "last_activity_name": { "name": "最近活動" },
+      "last_activity_type": { "name": "最近活動類型" },
+      "last_activity_duration": { "name": "最近活動時長" },
+      "last_activity_distance": { "name": "最近活動距離" },
+      "last_activity_training_load": { "name": "最近活動訓練負荷" },
+      "last_activity_avg_hr": { "name": "最近活動平均心率" },
+      "last_activity_max_hr": { "name": "最近活動最大心率" },
+      "last_activity_avg_power": { "name": "最近活動平均功率" },
+      "last_activity_np": { "name": "最近活動標準化功率" },
+      "last_activity_intensity": { "name": "最近活動強度" },
+      "last_activity_calories": { "name": "最近活動消耗熱量" },
+      "last_activity_elevation": { "name": "最近活動累計爬升" },
+      "next_workout_name": { "name": "下一個訓練" },
+      "next_workout_date": { "name": "下一個訓練日期" },
+      "next_workout_type": { "name": "下一個訓練類型" },
+      "ftp": { "name": "{sport} 閾值功率" },
+      "lthr": { "name": "{sport} 乳酸閾心率" },
+      "max_hr": { "name": "{sport} 最大心率" },
+      "resting_hr_athlete": { "name": "靜息心率 (檔案)" }
+    }
+  }
+}

@@ -88,6 +88,25 @@ A custom Home Assistant integration for [Intervals.icu](https://intervals.icu), 
 
 A calendar entity shows planned workouts, targets, notes, and races from your Intervals.icu calendar. Events appear in the Home Assistant calendar card and can be used in automations.
 
+## Languages / 语言
+
+The integration ships with English, Simplified Chinese (`zh-Hans`) and
+Traditional Chinese (`zh-Hant`) translations. Home Assistant picks the language
+from **Settings** > **System** > **General**; no configuration is needed.
+
+Entity IDs stay in English regardless of the selected language, so switching
+languages never orphans existing entities or their long-term statistics.
+Sport names are localized separately (for example `Ride` renders as `骑行`),
+because Home Assistant inserts placeholder values verbatim and does not
+translate them.
+
+新增翻译后可用以下脚本自检：
+
+```bash
+./.venv/Scripts/python.exe tools/check_translations.py    # 各语言 key 结构一致性
+./.venv/Scripts/python.exe tools/render_translations.py zh-Hans   # 预览渲染结果
+```
+
 ## Data Update
 
 Data is polled from the Intervals.icu API every 2 hours. The calendar fetches events on demand when browsing date ranges.
